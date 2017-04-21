@@ -30,6 +30,7 @@ class ColorFieldDialog;
 class GenerateOutliersDialog;
 
 class PairwiseRegistrationDialog;
+class BatchPairwiseRegistrationDialog;
 
 class DiagramWindow;
 class GlobalRegistrationDialog;
@@ -79,7 +80,8 @@ private:
 	ColorFieldDialog *colorFieldDialog;
 	GenerateOutliersDialog *generateOutliersDialog;
 
-	PairwiseRegistrationDialog *pairwiseRegistrationDialog;
+    PairwiseRegistrationDialog *pairwiseRegistrationDialog;
+    BatchPairwiseRegistrationDialog *batchPairwiseRegistrationDialog;
 	registar::PairwiseRegistrationManager *pairwiseRegistrationManager;
 	registar::RegistrationDataManager *registrationDataManager;
 
@@ -122,6 +124,7 @@ private slots:
 	void on_outliersRemovalAction_triggered();
 
 	void on_pairwiseRegistrationAction_triggered();
+    void on_batchPairwiseRegistrationAction_triggered();
 
 	void on_diagramAction_triggered();
 	void on_globalRegistrationAction_triggered();

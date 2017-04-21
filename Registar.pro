@@ -55,7 +55,8 @@ HEADERS += include/mainwindow.h \
 			include/tang2014dialog.h \
 			include/tang2014.h \
 			include/args_converter.h \
-			include/backgroundcolordialog.h
+			include/backgroundcolordialog.h \
+    include/batchpairwiseregistrationdialog.h
 #			include/globalregistrationinteractor.h
 SOURCES += src/main.cpp \
 			src/mainwindow.cpp \
@@ -107,7 +108,8 @@ SOURCES += src/main.cpp \
 			../Tang2014/tang2014_globalregistration.cpp \
 			../Tang2014/graph.cpp \
 			../Williams2001/SRoMCPS.cpp \
-			src/backgroundcolordialog.cpp
+			src/backgroundcolordialog.cpp \
+    src/batchpairwiseregistrationdialog.cpp
 #			src/globalregistrationinteractor.cpp
 RESOURCES += res/Registar.qrc \ 
 				diagram/resources.qrc
@@ -131,6 +133,7 @@ FORMS += ui/MainWindow.ui \
 			ui/ColorFieldDialog.ui  \
 			ui/GenerateOutliersDialog.ui \
 			ui/Tang2014Dialog.ui \
-			ui/BackgroundColorDialog.ui
+			ui/BackgroundColorDialog.ui \
+    ui/BatchPairwiseRegistrationDialog.ui
 
 

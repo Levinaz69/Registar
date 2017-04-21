@@ -24,7 +24,7 @@
      <x>0</x>
      <y>0</y>
      <width>1068</width>
-     <height>23</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="fileMenu">
@@ -58,6 +58,7 @@
      <addaction name="actionPulli1999"/>
     </widget>
     <addaction name="pairwiseRegistrationAction"/>
+    <addaction name="batchPairwiseRegistrationAction"/>
     <addaction name="globalRegistrationMenu"/>
     <addaction name="confirmRegistrationAction"/>
     <addaction name="forceRigidRegistrationAction"/>
@@ -551,6 +552,11 @@
   <action name="backgroundColorAction">
    <property name="text">
     <string>Background Color</string>
+   </property>
+  </action>
+  <action name="batchPairwiseRegistrationAction">
+   <property name="text">
+    <string>Batch Pairwise Registration</string>
    </property>
   </action>
  </widget>

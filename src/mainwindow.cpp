@@ -33,6 +33,7 @@
 #include "../include/pairwiseregistrationdialog.h"
 #include "../include/pairwiseregistration.h"
 #include "../include/pairwiseregistrationinteractor.h"
+#include "../include/batchpairwiseregistrationdialog.h"
 #include "../include/registrationdatamanager.h"
 
 #include "../diagram/diagramwindow.h"
@@ -75,6 +76,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), currentDirectory("
 	virtualScanDialog = 0;
 	depthCameraDialog = 0;
 	pairwiseRegistrationDialog = 0;
+    batchPairwiseRegistrationDialog = 0;
 	addNoiseDialog = 0;
 	transformationDialog = 0;
 	saveContentDialog = 0;
@@ -570,31 +572,47 @@ void MainWindow::on_depthCameraAction_triggered()
 
 void MainWindow::on_pairwiseRegistrationAction_triggered()
 {
-	if (!pairwiseRegistrationDialog)
-	{
-		pairwiseRegistrationDialog = new PairwiseRegistrationDialog(this);
-		pairwiseRegistrationDialog->setWindowFlags( Qt::Dialog | Qt::WindowMaximizeButtonHint | Qt::WindowMinimizeButtonHint);
-		connect(pairwiseRegistrationDialog, SIGNAL(sendParameters(QVariantMap)),
-			this, SLOT(on_pairwiseRegistrationDialog_sendParameters(QVariantMap)));
-	}
+    if (!pairwiseRegistrationDialog)
+    {
+        pairwiseRegistrationDialog = new PairwiseRegistrationDialog(this);
+        pairwiseRegistrationDialog->setWindowFlags( Qt::Dialog | Qt::WindowMaximizeButtonHint | Qt::WindowMinimizeButtonHint);
+        connect(pairwiseRegistrationDialog, SIGNAL(sendParameters(QVariantMap)),
+            this, SLOT(on_pairwiseRegistrationDialog_sendParameters(QVariantMap)));
+    }
 
-	pairwiseRegistrationDialog->targetComboBox->clear();
-	pairwiseRegistrationDialog->sourceComboBox->clear();
+    pairwiseRegistrationDialog->targetComboBox->clear();
+    pairwiseRegistrationDialog->sourceComboBox->clear();
 
-	QStringList allCloudNames = cloudManager->getAllCloudNames();
+    QStringList allCloudNames = cloudManager->getAllCloudNames();
 
-	pairwiseRegistrationDialog->targetComboBox->addItems(allCloudNames);
-	pairwiseRegistrationDialog->sourceComboBox->addItems(allCloudNames);
+    pairwiseRegistrationDialog->targetComboBox->addItems(allCloudNames);
+    pairwiseRegistrationDialog->sourceComboBox->addItems(allCloudNames);
 
-	int tabCurrentIndex = pairwiseRegistrationDialog->tabWidget->currentIndex();
-	if (tabCurrentIndex != -1)
-	{
-		pairwiseRegistrationDialog->on_tabWidget_currentChanged(tabCurrentIndex);
-	}
+    int tabCurrentIndex = pairwiseRegistrationDialog->tabWidget->currentIndex();
+    if (tabCurrentIndex != -1)
+    {
+        pairwiseRegistrationDialog->on_tabWidget_currentChanged(tabCurrentIndex);
+    }
 
-	pairwiseRegistrationDialog->show();
-	pairwiseRegistrationDialog->raise();
-	pairwiseRegistrationDialog->activateWindow();
+    pairwiseRegistrationDialog->show();
+    pairwiseRegistrationDialog->raise();
+    pairwiseRegistrationDialog->activateWindow();
+}
+
+void MainWindow::on_batchPairwiseRegistrationAction_triggered()
+{
+    if (!batchPairwiseRegistrationDialog)
+    {
+        batchPairwiseRegistrationDialog = new BatchPairwiseRegistrationDialog(this);
+        batchPairwiseRegistrationDialog->setWindowFlags( Qt::Dialog | Qt::WindowMaximizeButtonHint | Qt::WindowMinimizeButtonHint);
+    }
+
+    batchPairwiseRegistrationDialog->pairwiseRegistrationDialogPtr = &pairwiseRegistrationDialog;
+
+
+    batchPairwiseRegistrationDialog->show();
+    batchPairwiseRegistrationDialog->raise();
+    batchPairwiseRegistrationDialog->activateWindow();
 }
 
 void MainWindow::on_concatenationAction_triggered()
