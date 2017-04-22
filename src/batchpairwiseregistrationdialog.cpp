@@ -116,11 +116,17 @@ void BatchPairwiseRegistrationDialog::on_initializePushButton_clicked()
         return;
     }
 
-
     QString text = initializePairText->toPlainText();
     QStringList lines = text.split("\n");
+
+    QProgressDialog progress("Initializing...", "Abort", 0, lines.size(), this);
+    progress.setWindowModality(Qt::WindowModal);
     for (int i = 0; i < lines.size(); ++i)
     {
+        if(progress.wasCanceled())
+            break;
+        progress.setValue(i);
+
         if (lines[i] != "")
         {
             QStringList pair = lines[i].split("<-");
@@ -152,6 +158,7 @@ void BatchPairwiseRegistrationDialog::on_initializePushButton_clicked()
             addPair(lines[i]);
         }
     }
+    progress.setValue(lines.size());
 
 }
 
@@ -164,24 +171,82 @@ void BatchPairwiseRegistrationDialog::on_icpPushButton_clicked()
         return;
     }
 
+    QList<double> distThresholdList;
+    if (distThresholdListChecker->checkState() == Qt::Checked)
+    {
+        QDoubleValidator distThresholdValidator;
+        distThresholdValidator.setBottom(getPairwiseRegistrationDialog()->distanceDoubleSpinBox->minimum());
+        distThresholdValidator.setTop(getPairwiseRegistrationDialog()->distanceDoubleSpinBox->maximum());
+        distThresholdValidator.setDecimals(getPairwiseRegistrationDialog()->distanceDoubleSpinBox->decimals());
+        distThresholdValidator.setNotation(QDoubleValidator::StandardNotation);
+
+        QString dText = distThresholdText->toPlainText();
+        QStringList dLines = dText.split("\n");
+        int validate_pos = 0;
+        for (int i = 0; i < dLines.size(); ++i)
+        {
+            if (distThresholdValidator.validate(dLines[i], validate_pos) == QValidator::Acceptable)
+            {
+                distThresholdList.append(dLines[i].toDouble());
+            }
+        }
+        if (distThresholdList.empty())
+        {
+            qDebug() << "Invalid distance threshold list!";
+            return;
+        }
+        else
+        {
+            qDebug() << "Accept distance threshold list:";
+            for (int i = 0; i < distThresholdList.size(); ++i)
+                qDebug() << " " << distThresholdList[i];
+        }
+    }
 
     QStringList tab_label_list = getTabLabelList();
     QStringList pairNameList = getSelectedPairNames();
 
+    QProgressDialog progress("ICP...", "Abort", 0, pairNameList.size(), this);
+    progress.setWindowModality(Qt::WindowModal);
+
     QStringList::Iterator pair_it = pairNameList.begin();
     while (pair_it != pairNameList.end())
     {
+        if(progress.wasCanceled())
+            break;
+        progress.setValue(pair_it - pairNameList.begin());
+
         if (changeTab(*pair_it))
         {
-
-            getPairwiseRegistrationDialog()->on_icpPushButton_clicked();
-
-            qDebug() << *pair_it << "startICP!";
+            if (distThresholdListChecker->checkState() == Qt::Checked)
+            {
+                for (int i = 0; i < distThresholdList.size(); ++i)
+                {
+                    getPairwiseRegistrationDialog()->distanceDoubleSpinBox->setValue(distThresholdList[i]);
+                    getPairwiseRegistrationDialog()->on_icpPushButton_clicked();
+                    qDebug() << *pair_it << " ICP with distance threshold:" << distThresholdList[i];
+                }
+            }
+            else
+            {
+                getPairwiseRegistrationDialog()->on_icpPushButton_clicked();
+                qDebug() << *pair_it << " ICP!";
+            }
 
         }
         ++pair_it;
     }
+    progress.setValue(pairNameList.size());
 
+
+}
+
+void BatchPairwiseRegistrationDialog::on_distThresholdListChecker_stateChanged()
+{
+    if (distThresholdListChecker->checkState() == Qt::Checked)
+        distThresholdText->setEnabled(true);
+    else
+        distThresholdText->setEnabled(false);
 }
 
 
