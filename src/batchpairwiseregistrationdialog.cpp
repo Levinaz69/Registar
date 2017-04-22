@@ -6,10 +6,12 @@ BatchPairwiseRegistrationDialog::BatchPairwiseRegistrationDialog(QWidget *parent
 {
     setupUi(this);
     //setFixedHeight(sizeHint().height());
+    setMinimumHeight(sizeHint().height());
     setFixedWidth(sizeHint().width());
 
+
     QStringList headLabels;
-    headLabels << "" << "";
+    headLabels << "Pair" << "ICP";
     pairBrowser->setHeaderLabels(headLabels);
 }
 
@@ -33,6 +35,20 @@ QStringList BatchPairwiseRegistrationDialog::getSelectedPairNames()
         ++it;
     }
     return pairNameList;
+}
+
+void BatchPairwiseRegistrationDialog::checkSelectedChecker()
+{
+    QList<QTreeWidgetItem*> seletcedItems = pairBrowser->selectedItems();
+    QList<QTreeWidgetItem*>::Iterator it = seletcedItems.begin();
+    while (it != seletcedItems.end())
+    {
+        if ( (*it)->checkState(1) != Qt::Checked )
+        {
+            (*it)->setCheckState(1, Qt::Checked);
+        }
+        ++it;
+    }
 }
 
 QStringList BatchPairwiseRegistrationDialog::getTabLabelList()
@@ -77,7 +93,7 @@ bool BatchPairwiseRegistrationDialog::changeTab(const QString &pairName)
 void BatchPairwiseRegistrationDialog::addPair(QString pair_label)
 {
     QStringList strings;
-    strings << pair_label << "run";
+    strings << pair_label << "icp_finish";
     QTreeWidgetItem *treeWidgetItem = new QTreeWidgetItem(strings);
     treeWidgetItem->setCheckState(1, Qt::Unchecked);
     pairBrowser->addTopLevelItem(treeWidgetItem);
@@ -118,15 +134,9 @@ void BatchPairwiseRegistrationDialog::on_initializePushButton_clicked()
 
     QString text = initializePairText->toPlainText();
     QStringList lines = text.split("\n");
-
-    QProgressDialog progress("Initializing...", "Abort", 0, lines.size(), this);
-    progress.setWindowModality(Qt::WindowModal);
+    int nPair = 0;
     for (int i = 0; i < lines.size(); ++i)
     {
-        if(progress.wasCanceled())
-            break;
-        progress.setValue(i);
-
         if (lines[i] != "")
         {
             QStringList pair = lines[i].split("<-");
@@ -156,9 +166,11 @@ void BatchPairwiseRegistrationDialog::on_initializePushButton_clicked()
             qDebug() << pairName << " initialize!";
 
             addPair(lines[i]);
+            ++nPair;
         }
     }
-    progress.setValue(lines.size());
+
+    QMessageBox::information(this, "initialize finished", QString("initialize for ") + QString::number(nPair) + QString(" pairs finished!"), QMessageBox::Ok);
 
 }
 
@@ -206,15 +218,9 @@ void BatchPairwiseRegistrationDialog::on_icpPushButton_clicked()
     QStringList tab_label_list = getTabLabelList();
     QStringList pairNameList = getSelectedPairNames();
 
-    QProgressDialog progress("ICP...", "Abort", 0, pairNameList.size(), this);
-    progress.setWindowModality(Qt::WindowModal);
-
     QStringList::Iterator pair_it = pairNameList.begin();
     while (pair_it != pairNameList.end())
     {
-        if(progress.wasCanceled())
-            break;
-        progress.setValue(pair_it - pairNameList.begin());
 
         if (changeTab(*pair_it))
         {
@@ -236,8 +242,9 @@ void BatchPairwiseRegistrationDialog::on_icpPushButton_clicked()
         }
         ++pair_it;
     }
-    progress.setValue(pairNameList.size());
 
+    checkSelectedChecker();
+    QMessageBox::information(this, "ICP finished", QString("ICP for ") + QString::number(pairNameList.size()) + QString(" pairs finished!"), QMessageBox::Ok);
 
 }
 

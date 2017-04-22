@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>672</width>
-    <height>308</height>
+    <width>590</width>
+    <height>348</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -85,6 +85,11 @@
        <column>
         <property name="text">
          <string>Pair</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>ICP</string>
         </property>
        </column>
       </widget>

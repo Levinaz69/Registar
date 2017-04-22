@@ -2,7 +2,7 @@
 #define BATCHPAIRWISEREGISTRATIONDIALOG_H
 
 #include <QtGui/QDialog>
-#include <QtGui/QProgressDialog>
+#include <QtGui/QMessageBox>
 #include "pairwiseregistrationdialog.h"
 
 #include "ui_BatchPairwiseRegistrationDialog.h"
@@ -23,6 +23,7 @@ private:
     QStringList getTabLabelList();
     bool changeTab(const QString &pairName);
     void addPair(QString pair_label);
+    void checkSelectedChecker();
 
 private slots:
         void on_getPairPushButton_clicked();
