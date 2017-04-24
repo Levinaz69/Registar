@@ -134,39 +134,45 @@ void BatchPairwiseRegistrationDialog::on_initializePushButton_clicked()
 
     QString text = initializePairText->toPlainText();
     QStringList lines = text.split("\n");
+
     int nPair = 0;
     for (int i = 0; i < lines.size(); ++i)
     {
         if (lines[i] != "")
         {
-            QStringList pair = lines[i].split("<-");
+            QStringList cloudList = lines[i].split("<-");
 
-            if (pair.size() < 2)
+            for (int j = 1; j < cloudList.size(); ++j)
             {
-                qDebug() << "pair list format error!" << lines[i] << "!";
-                return;
+                QString cloudName_target = cloudList[j-1];
+                QString cloudName_source = cloudList[j];
+
+                int targetIdx = getPairwiseRegistrationDialog()->targetComboBox->findText(cloudName_target, Qt::MatchExactly);
+                int sourceIdx = getPairwiseRegistrationDialog()->sourceComboBox->findText(cloudName_source, Qt::MatchExactly);
+                if (targetIdx == -1 || sourceIdx == -1)
+                {
+                    qDebug() << "Cannot find given cloud" << cloudName_target << "<-" << cloudName_source << "!";
+                    continue;
+                }
+
+                getPairwiseRegistrationDialog()->targetComboBox->setCurrentIndex(targetIdx);
+                getPairwiseRegistrationDialog()->sourceComboBox->setCurrentIndex(sourceIdx);
+
+                QString pairName = cloudName_target + "<-" + cloudName_source;
+                QWidget *current = getPairwiseRegistrationDialog()->tabWidget->currentWidget();
+                if ((current != NULL) && (pairName == current->objectName()))
+                {
+                    qDebug() << cloudName_target << "<-" << cloudName_source << "already exists!";
+                    continue;
+                }
+
+                getPairwiseRegistrationDialog()->on_initializePushButton_clicked();
+                qDebug() << "pair" << pairName << "initialized!";
+
+                addPair(pairName);
+                ++nPair;
             }
 
-            int targetIdx = getPairwiseRegistrationDialog()->targetComboBox->findText(pair[0], Qt::MatchExactly);
-            int sourceIdx = getPairwiseRegistrationDialog()->sourceComboBox->findText(pair[1], Qt::MatchExactly);
-            if (targetIdx == -1 || sourceIdx == -1)
-            {
-                qDebug() << "Cannot find given pair" << lines[i] << "!";
-                return;
-            }
-            getPairwiseRegistrationDialog()->targetComboBox->setCurrentIndex(targetIdx);
-            getPairwiseRegistrationDialog()->sourceComboBox->setCurrentIndex(sourceIdx);
-
-            QString pairName = pair[0] + "<-" + pair[1];
-            QWidget *current = getPairwiseRegistrationDialog()->tabWidget->currentWidget();
-            if ((current != NULL) && (pairName == current->objectName()))
-                continue;
-
-            getPairwiseRegistrationDialog()->on_initializePushButton_clicked();
-            qDebug() << pairName << " initialize!";
-
-            addPair(lines[i]);
-            ++nPair;
         }
     }
 
